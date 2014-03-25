@@ -62,10 +62,18 @@
 (defn find-vars
   "Finds vars in Clojure namespaces for which namespace-pred returns true that have metadata
    for which meta-pred returns true. If namespace-pred is not provided, all Clojure namespaces
-   are checked. The returns vars will each be in a map where the :ns key is the namespace
-   which the var was found in, and :var is the Clojure var itself (which you can get the value
-   of by, e.g. using var-get)"
-  [meta-pred & [namespace-pred]]
+   are checked.
+
+   The require-all-namespaces? argument determines if namespaces will be 'required' (loaded)
+   before they are scanned for vars. If you specify false for this argument then only vars from
+   namespaces which are already loaded will be searched. This argument in combination with
+   namespace-pred can be used to significantly reduce the number of namespaces that are loaded
+   and scanned through. If this argument is not specified, false is assumed.
+
+   A sequence of maps will be returned, where each map holds information about a var that was
+   found. The :ns key is the namespace which the var was found in, and :var is the Clojure var
+   itself (which you can get the value of by, e.g. using var-get)"
+  [meta-pred & [namespace-pred require-all-namespaces?]]
   (->> (find-namespaces namespace-pred)
-       (map #(find-vars-in % meta-pred))
+       (map #(find-vars-in % meta-pred require-all-namespaces?))
        (apply concat)))
