@@ -42,7 +42,7 @@ on each namespace (as a symbol) found.
 ; using namespace filtering
 (find-vars
   #(= (:name %) 'find-namespaces)
-  #(not= % 'clj-metasearch.core))
+  :namespace-pred #(not= % 'clj-metasearch.core))
 => ({:ns clojure.tools.namespace.find, :var (var clojure.tools.namespace.find/find-namespaces)})
 ```
 
@@ -50,14 +50,16 @@ By default, to help avoid loading a bunch of libraries the first time `find-vars
 automatically loaded before being checked. Thusly, you will only be able to find Vars in namespaces that are
 currently loaded.
 
-`find-vars` takes a third optional argument that allows you to change this behaviour. Passing `true` as the
-third argument will cause each namespace being checked to first be loaded via `require`.
+`find-vars` takes an additional optional argument `:require-all-namespaces?` that allows you to change this
+behaviour. Passing `true` will cause each namespace being checked to first be loaded via `require`.
 
 ```clojure
 (find-vars #(= (:name %) 'parse))
 => ()
 
-(find-vars #(= (:name %) 'parse) nil true)
+(find-vars
+  #(= (:name %) 'parse)
+  :require-all-namespaces? true)
 => ({:ns clojure.xml, :var (var clojure.xml/parse)})
 ```
 
