@@ -1,4 +1,4 @@
-(defproject clj-metasearch "0.1"
+(defproject clj-metasearch "0.1.1"
   :description "Helper functions for searching through Clojure namespaces for vars containing specific bits of metadata."
   :url "https://github.com/gered/clj-metasearch"
   :license {:name "MIT License"
