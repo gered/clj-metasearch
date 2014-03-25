@@ -73,7 +73,7 @@
    A sequence of maps will be returned, where each map holds information about a var that was
    found. The :ns key is the namespace which the var was found in, and :var is the Clojure var
    itself (which you can get the value of by, e.g. using var-get)"
-  [meta-pred & [namespace-pred require-all-namespaces?]]
+  [meta-pred & {:keys [namespace-pred require-all-namespaces?]}]
   (->> (find-namespaces namespace-pred)
        (map #(find-vars-in % meta-pred require-all-namespaces?))
        (apply concat)))
