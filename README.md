@@ -30,8 +30,9 @@ Hello world!
 ```
 
 By default `find-vars` will search all Clojure namespaces it can find in the current classpath. We can filter
-which Clojure namespaces are checked by supplying an additional predicate to `find-vars` which will be run
-on each namespace (as a symbol) found.
+which Clojure namespaces are checked by supplying an additional predicate to `find-vars` under the
+`:namespace-pred` argument. This predicate will be run on each namespace found (the namespace will be passed
+as a symbol to the predicate).
 
 ```clojure
 ; no namespace filtering. all namespaces are checked
@@ -62,6 +63,10 @@ behaviour. Passing `true` will cause each namespace being checked to first be lo
   :require-all-namespaces? true)
 => ({:ns clojure.xml, :var (var clojure.xml/parse)})
 ```
+
+When you use `true` for `:require-all-namespaces?`, it would normally be a good idea to supply a namespace
+predicate via `:namespace-pred` if at all possible to avoid unnecessarily loading a whole bunch of extra
+namespaces.
 
 ## License
 
