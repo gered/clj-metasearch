@@ -2,6 +2,8 @@
 
 Helper functions for searching through Clojure namespaces for Vars containing specific bits of metadata.
 
+!["clj-metasearch version"](https://clojars.org/clj-metasearch/latest-version.svg)
+
 ## Usage
 
 Finding Clojure Vars is fairly simple.
