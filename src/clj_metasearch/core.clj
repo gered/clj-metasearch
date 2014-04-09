@@ -81,9 +81,7 @@
    will be left unsuppressed. All other exceptions will be silently suppressed. The default
    for this option is false.
 
-   A sequence of maps will be returned, where each map holds information about a var that was
-   found. The :ns key is the namespace which the var was found in, and :var is the Clojure var
-   itself (which you can get the value of by, e.g. using var-get)"
+   A sequence of the actual vars found will be returned."
   [meta-pred & {:keys [namespace-pred] :as options}]
   (->> (find-namespaces namespace-pred)
        (map #(find-vars-in % meta-pred options))
