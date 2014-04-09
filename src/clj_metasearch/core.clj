@@ -33,8 +33,7 @@
            (fn [matches [name var]]
              (let [metadata (meta var)]
                (if (pred metadata)
-                 (conj matches {:ns namespace
-                                :var var})
+                 (conj matches var)
                  matches)))
            []))
     (catch Compiler$CompilerException ex
