@@ -63,11 +63,24 @@
    for which meta-pred returns true. If namespace-pred is not provided, all Clojure namespaces
    are checked.
 
-   The require-all-namespaces? argument determines if namespaces will be 'required' (loaded)
-   before they are scanned for vars. If you specify false for this argument then only vars from
-   namespaces which are already loaded will be searched. This argument in combination with
-   namespace-pred can be used to significantly reduce the number of namespaces that are loaded
-   and scanned through. If this argument is not specified, false is assumed.
+   The final 'options' argument accepts the following:
+
+   :require-all-namespaces?
+   Determines if namespaces will be 'required' (loaded) before they are scanned for vars. If
+   you specify false for this option then only vars from namespaces which are already loaded
+   will be searched. This option in combination with namespace-pred can be used to
+   significantly reduce the number of namespaces that are loaded and scanned through. The
+   default for this option is false.
+
+   :throw-exceptions?
+   If true, any exceptions encountered while searching through namespaces will not be
+   suppressed, meaning it will be the callers responsibility to deal with them. The default
+   for this option is false, meaning all exceptions are silently suppressed.
+
+   :throw-compiler-exceptions?
+   Similar to :throw-exceptions?, but only clojure.lang.Compiler.CompilerException exceptions
+   will be left unsuppressed. All other exceptions will be silently suppressed. The default
+   for this option is false.
 
    A sequence of maps will be returned, where each map holds information about a var that was
    found. The :ns key is the namespace which the var was found in, and :var is the Clojure var
