@@ -1,6 +1,7 @@
 (ns clj-metasearch.core
   (:import (java.io File)
-           (java.util.jar JarFile))
+           (java.util.jar JarFile)
+           (clojure.lang Compiler$CompilerException))
   (:require [clojure.tools.namespace.find :refer [find-clojure-sources-in-dir find-namespaces-in-jarfile]]
             [clojure.tools.namespace.file :refer [read-file-ns-decl]]
             [clojure.java.classpath :refer [classpath jar-file?]]))
@@ -20,7 +21,10 @@
        (map find-namespaces-in-jarfile)
        (apply concat)))
 
-(defn- find-vars-in [namespace pred & [require-all-namespaces?]]
+(defn- namespace-not-found-exception? [^Exception ex]
+  (not (nil? (re-matches #"^(?:java\.lang\.Exception\: No namespace\: )(.*?)(?: found)$" (.toString ex)))))
+
+(defn- find-vars-in [namespace pred {:keys [require-all-namespaces? throw-exceptions? throw-compiler-exceptions?]}]
   (try
     (when require-all-namespaces?
       (require namespace))
@@ -33,19 +37,14 @@
                                 :var var})
                  matches)))
            []))
+    (catch Compiler$CompilerException ex
+      (if (or throw-exceptions? throw-compiler-exceptions?)
+        (throw ex)
+        []))
     (catch Exception ex
-      ; some namespaces, such as clojure.core.reducers, cannot be loaded under Java 6 and when
-      ; we run this function on such a namespace we get an exception like:
-      ;
-      ;   java.lang.Exception: No namespace: clojure.core.reducers found
-      ;
-      ; which kind of makes it hard to pick out only those cases.
-      ; also, the exact same type of exception will get thrown if we attempt to call
-      ; (ns-interns) on a namespace which has not been loaded (required/used) yet.
-      ;
-      ; so for now we'll just silently fail on any exception and return a blank list (what
-      ; else could we really do?)
-      [])))
+      (if throw-exceptions?
+        (throw ex)
+        []))))
 
 (defn find-namespaces
   "Searches for all Clojure namespaces currently on the classpath and returns only those
@@ -73,7 +72,7 @@
    A sequence of maps will be returned, where each map holds information about a var that was
    found. The :ns key is the namespace which the var was found in, and :var is the Clojure var
    itself (which you can get the value of by, e.g. using var-get)"
-  [meta-pred & {:keys [namespace-pred require-all-namespaces?]}]
+  [meta-pred & {:keys [namespace-pred] :as options}]
   (->> (find-namespaces namespace-pred)
-       (map #(find-vars-in % meta-pred require-all-namespaces?))
+       (map #(find-vars-in % meta-pred options))
        (apply concat)))
